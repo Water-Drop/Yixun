@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>jQuery Mobile Web 应用程序</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./jquery.mobile-1.4.2/jquery.mobile-1.4.2.min.css" />
+    <style>
+        .text {
+            font-size: 14px;
+        }
+    </style>
+    <script src="jquery-1.10.1.min.js"></script>
+    <script type="text/javascript">
+        var LastRecId = 0;
+        var FirstRecId = 0;
+        function getUrlParam(string) {
+            var idArr = new Array([2]);
+            if (string.indexOf("?") != -1) {
+                var tmpstring = string.substr(string.indexOf("?") + 1);
+                var strs = tmpstring.split("&");
+                var tempRidArr = strs[0].split("=");
+                var tempOidArr = strs[1].split("=");
+                //var tmpstr = unescape(tempArr[1]);
+                idArr[0] = parseInt(tempRidArr[1]);
+                idArr[1] = parseInt(tempOidArr[1]);
+            }
+            return idArr;
+        }
+        $('#page').live('pagebeforeshow', function (event) {
+            document.getElementById('ul').innerHTML = "";
+            var obj = { cmd: "get_recruitments", RecruitmentID: null };
+            var jsondata = JSON.stringify(obj);
+            $.ajax({
+                dataType: "json",
+                url: "InfoGate.aspx",
+                type: "POST",
+                data: jsondata,
+                success: function (response) {
+                    //alert("success");
+                    //alert(JSON.stringify(response));
+                    //var res = response.parse();
+                    //var res = new Array();
+                    var res = JSON.parse(JSON.stringify(response));
+                    //for (i = 0; i < res.)
+                    var rec = JSON.parse(JSON.stringify(res.recruitments));
+                    rec.push(null);
+                    if (rec[0] != null) {
+                        FirstRecId = rec[0].RecruitmentID;
+                    }
+                    for (i = 0; i < rec.length; i++) {
+                        if (rec[i] != null) {
+                            var s = "<li> <a href=#detailpage?Rid=" + rec[i].RecruitmentID + "&Oid=" + rec[i].OrgID + "> <h1 class='text'>&nbsp;&nbsp;" + rec[i].OrgName;
+                            s = s + "<p><\p>" + "<p>" + rec[i].ShowField + "</p>" + "<p>" + rec[i].ShowBeginTime + "</p>" + "</h1></a></li>";
+                            $(".myDivUl").append(s);
+                        }
+                        else {
+                            if (i != 0) {
+                                LastRecId = rec[i - 1].RecruitmentID;
+                                break;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                    }
+                    //for (i = 0; i < rec.length; i++) {
+                    //    var s = "<li> <a href=#detailpage?Rid=" + rec[i].RecruitmentID + "&Oid=" + rec[i].OrgID + "> <h1 class='text'>&nbsp;&nbsp;" + rec[i].OrgName;
+                    //    s = s + "<p><\p>" + "<p>" + rec[i].ShowField + "</p>" + "<p>" + rec[i].ShowBeginTime + "</p>" + "</h1></a></li>";
+                    //    $(".myDivUl").append(s);
+                    //    $(".myDivUl").listview('refresh');
+                    //}
+                    //LastRecId = rec[rec.length - 1].RecruitmentID;
+                    //alert(rec[0].OrgID)
+                    $(".myDivUl").listview('refresh');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("status" + XMLHttpRequest.status);
+                    alert("readyState" + XMLHttpRequest.readyState);
+                    alert("textstatus" + textStatus);
+                    alert(errorThrown);
+                }
+            });
+        });
+         </script>
+         <script src="./jquery.mobile-1.4.2/jquery.mobile-1.4.2.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
